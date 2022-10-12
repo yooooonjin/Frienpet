@@ -6,12 +6,12 @@ import { encryptedPassword, isPasswordCorrect } from '../service/auth-service';
 const authRouter = Router();
 
 authRouter.post('/join', async function (req, res) {
-  const { email, name, pw, phone, upr_cd, org_cd } = req.body;
+  const { email, name, pw, phone, sido, sigungu, bname } = req.body;
   const hashedPw = await encryptedPassword(pw);
-  const sqlQuery = 'INSERT INTO USER VALUE(?,?,?,?,?,?,now())';
+  const sqlQuery = 'INSERT INTO USER VALUE(?,?,?,?,?,?,?,now())';
   conn.query(
     sqlQuery,
-    [email, name, hashedPw, phone, upr_cd, org_cd],
+    [email, name, hashedPw, phone, sido, sigungu, bname],
     function (err, rows, fields) {
       if (!err) {
         res.send(rows); // response send rows
@@ -20,6 +20,18 @@ authRouter.post('/join', async function (req, res) {
       }
     }
   );
+});
+
+authRouter.get('/emailCheck', async function (req, res) {
+  const { email } = req.query;
+  const sqlQuery = 'SELECT COUNT(*) as count FROM USER WHERE EMAIL=?';
+  conn.query(sqlQuery, [email], function (err, rows, fields) {
+    if (!err) {
+      res.send(rows); // response send rows
+    } else {
+      res.send(err); // response send err
+    }
+  });
 });
 
 authRouter.post('/login', function (req, res) {
@@ -67,7 +79,7 @@ authRouter.get('/logout', function (req, res) {
 authRouter.get('/', function (req, res) {
   const { email } = req.query;
   const sqlQuery =
-    'SELECT email, name, phone, upr_cd, org_cd FROM USER WHERE EMAIL=?';
+    'SELECT email, name, phone, sido, sigungu,bname FROM USER WHERE EMAIL=?';
   conn.query(sqlQuery, [email], function (err, rows, fields) {
     if (!err) {
       res.send(rows); // response send rows

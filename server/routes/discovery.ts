@@ -7,9 +7,12 @@ const discoveryRouter = Router();
 discoveryRouter.post('/save', function (req, res) {
   const {
     email,
-    upr_cd,
-    org_cd,
+    sido,
+    sigungu,
+    bname,
     location,
+    lat,
+    lng,
     upkind,
     kind,
     size,
@@ -19,15 +22,18 @@ discoveryRouter.post('/save', function (req, res) {
     photo,
   } = req.body;
   const sqlQuery =
-    'INSERT INTO DISCOVERY VALUES (?,?,?,?,?,?,?,?,?,?,?,?,now())';
+    'INSERT INTO DISCOVERY VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,now())';
   conn.query(
     sqlQuery,
     [
       v4(),
       email,
-      upr_cd,
-      org_cd,
+      sido,
+      sigungu,
+      bname,
       location,
+      lat,
+      lng,
       upkind,
       kind,
       size,
@@ -46,7 +52,9 @@ discoveryRouter.post('/save', function (req, res) {
   );
 });
 discoveryRouter.get('/', function (req, res) {
-  const sqlQuery = 'SELECT * FROM DISCOVERY';
+  const { range, address } = req.query;
+  const region = range === 'all' ? '' : `WHERE ${range} = '${address}'`;
+  const sqlQuery = `SELECT * FROM DISCOVERY ${region} ORDER BY CREATEDDATE DESC`;
   conn.query(sqlQuery, function (err, rows, fields) {
     if (!err) {
       res.send(rows);
